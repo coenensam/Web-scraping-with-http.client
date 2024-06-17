@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 24 13:04:19 2024
-
-@author: sam37
-"""
-
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -113,7 +106,7 @@ conn.close()
 
 """Get odds for all matches in df"""
 
-# Get odds
+# Function that converts fractional odds into decimal odds
 def odd_converter(odd):
     
     try:
@@ -128,6 +121,7 @@ def odd_converter(odd):
 odd_home = []
 odd_away = []
 
+# For each match in the dataset, store odds for home victory and away victory
 for matchid in df.index:
     
     try:
@@ -142,9 +136,6 @@ for matchid in df.index:
         
         odd_home.append(odd_converter(odd1))
         odd_away.append(odd_converter(odd2))
-     
-        # if len(odd_home)!=len(odd_away):
-        #     break
     
     except:
         odd_home.append(np.nan)
@@ -162,6 +153,7 @@ df['odd away'] = odd_away
 votes1=[]
 votes2=[]
 
+# For all matches in the dataset, store the user votes for home victory and away victory
 for matchid in df.index:
 
     conn.request('GET', '/api/v1/event/{}/votes'.format(matchid), headers=headers)    
@@ -182,6 +174,8 @@ df['votes away'] = votes2
 
 """Data analysis"""
 
+# Calculate the probabilities implied by the odds ('impl prob') and by the 
+# votes ('votes prob')
 df['impl prob home'] = 1/df['odd home']
 df['impl prob away'] = 1/df['odd away']
 df['total votes'] = df['votes home']+df['votes away']
@@ -207,17 +201,14 @@ probs_per_bin = df_tot_votes.groupby('bin').apply(lambda x: pd.Series({
     'avg odd home':x['odd home'].mean()
     }))
 
-# Take matches were there is a big difference between prob implied by votes
-# and prob implied by odds
-temp = df_tot_votes[
+# Take matches were there is a large relative difference between probalities
+# implied by votes and probabilities implied by odds
+large_diff = df_tot_votes[
     abs(df_tot_votes['votes prob home']-df_tot_votes['impl prob home'])/
     df_tot_votes['impl prob home']>0.30]
 
-# Take matches where votes overestimate the probability of home victory
-overest_home = temp[(temp['votes prob home']>temp['impl prob home']) & 
-                    (temp['votes prob home']>0.6)]
+# Take matches where votes imply an higher probability than odds for
+# home victory
+overest_home = large_diff[(large_diff['votes prob home']>large_diff['impl prob home'])]
 
-# Test strategy
-earnings_strat1 = overest_home[
-    overest_home['winner']==1]['odd home'].sum()/len(overest_home)
 
