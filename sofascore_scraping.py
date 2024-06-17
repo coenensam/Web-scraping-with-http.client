@@ -1,16 +1,10 @@
-import requests
-from bs4 import BeautifulSoup
-from selenium import webdriver
+import http.client
+import json
 import pandas as pd
 import numpy as np
 import time
 
 #######################################
-
-# Using http.client
-
-import http.client
-import json
 
 # Set up connection
 conn = http.client.HTTPSConnection('www.sofascore.com')
