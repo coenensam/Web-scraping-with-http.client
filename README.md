@@ -12,3 +12,5 @@ Results showed that closing odds are more successfull at estimating the probabil
 The hypothesis is that, for some events, a considerable amount of 'wrong' guesses forces bookmakers to separate odds from the real probabilities of an event. This scenario would create the opportunity to bet againts the votes and generate a positive profit. 
 
 Results show that, by increasing the number of total votes and the discrepancy between probabilities implied by votes and probabilities implied by odds, it is possible to achieve positive returns and beat the bookmakers.
+
+![](profit_per_bet)
