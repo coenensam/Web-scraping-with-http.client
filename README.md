@@ -13,4 +13,4 @@ The hypothesis is that, for some events, a considerable amount of 'wrong' guesse
 
 Results show that, by increasing the number of total votes and the discrepancy between probabilities implied by votes and probabilities implied by odds, it is possible to achieve positive returns and beat the bookmakers.
 
-![](profit_per_bet)
+![](/images/profit_per_bet)
