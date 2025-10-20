@@ -151,12 +151,15 @@ df['votes away'] = votes2
 
 ########################################
 
-"""Data analysis"""
+"""
+Data analysis
+Accuracy Votes Vs Accuracy Odds
+"""
 
 # Calculate the probabilities implied by the odds ('impl prob') and by the 
 # votes ('votes prob')
-df['impl prob home'] = 1/df['odd home']
-df['impl prob away'] = 1/df['odd away']
+df['impl prob home'] = df['odd away'] / (df['odd away'] + df['odd home'])
+df['impl prob away'] = df['odd home'] / (df['odd away'] + df['odd home'])
 df['total votes'] = df['votes home']+df['votes away']
 df['votes prob home'] = df['votes home']/df['total votes']
 df['votes prob away'] = df['votes away']/df['total votes']
@@ -164,7 +167,6 @@ df['votes prob away'] = df['votes away']/df['total votes']
 # Partition the data based on the probability of home victory implied by votes
 # into 5% bins
 bins = np.arange(0,1.05,0.05)
-
 df['bin'] = pd.cut(df['votes prob home'], bins, include_lowest=True)
 
 # Take matches with more than 500 votes
@@ -180,14 +182,14 @@ probs_per_bin = df_tot_votes.groupby('bin').apply(lambda x: pd.Series({
     'avg odd home':x['odd home'].mean()
     }))
 
-# Take matches were there is a large relative difference between probalities
-# implied by votes and probabilities implied by odds
-large_diff = df_tot_votes[
-    abs(df_tot_votes['votes prob home']-df_tot_votes['impl prob home'])/
-    df_tot_votes['impl prob home']>0.30]
 
-# Take matches where votes imply an higher probability than odds for
-# home victory
-overest_home = large_diff[(large_diff['votes prob home']>large_diff['impl prob home'])]
+###############
+"""
+Data Analysis
+Do Votes Shift Odds?
+"""
+
+
+
 
 
