@@ -165,7 +165,7 @@ df['votes prob home'] = df['votes home']/df['total votes']
 df['votes prob away'] = df['votes away']/df['total votes']
 
 # Partition the data based on the probability of home victory implied by votes
-# into 5% bins
+# into bins
 bins = np.arange(0,1.05,0.03)
 df['bin_votes'] = pd.cut(df['votes prob home'], bins, include_lowest=True)
 df['bin_odds'] = pd.cut(df['impl prob home'], bins, include_lowest=True)
@@ -200,6 +200,7 @@ from sklearn.metrics import mean_squared_error as mse
 # Compare MSE
 print(mse(probs_per_bin_votes['prob votes home'], probs_per_bin_votes['prob outcomes home']))
 print(mse(probs_per_bin_odds['prob odds home'], probs_per_bin_odds['prob outcomes home']))
+
 
 
 
