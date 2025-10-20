@@ -166,28 +166,42 @@ df['votes prob away'] = df['votes away']/df['total votes']
 
 # Partition the data based on the probability of home victory implied by votes
 # into 5% bins
-bins = np.arange(0,1.05,0.05)
-df['bin'] = pd.cut(df['votes prob home'], bins, include_lowest=True)
+bins = np.arange(0,1.05,0.03)
+df['bin_votes'] = pd.cut(df['votes prob home'], bins, include_lowest=True)
+df['bin_odds'] = pd.cut(df['impl prob home'], bins, include_lowest=True)
 
 # Take matches with more than 500 votes
 df_tot_votes = df[df['total votes']>500]
 
-# Find mean probabilities and mean odds in each bin
-probs_per_bin = df_tot_votes.groupby('bin').apply(lambda x: pd.Series({
-    'prob votes': x['votes prob home'].mean(),
-    'prob outcomes':(x['winner']==1).sum()/len(x),
-    'population': len(x),
-    'prob odd': x['impl prob home'].mean(),
-    'avg odd away':x['odd away'].mean(),
-    'avg odd home':x['odd home'].mean()
+# Find mean probabilities and mean odds in each bin for votes
+probs_per_bin_votes = df_tot_votes.groupby('bin_votes').apply(lambda x: pd.Series({
+    'prob votes home': x['votes prob home'].mean(),
+    'prob outcomes home':(x['winner']==1).sum()/len(x),
+    'prob votes away': x['votes prob away'].mean(),
+    'prob outcomes away':(x['winner']==2).sum()/len(x),
+    'population': len(x)
     }))
 
+# Find mean probabilities and mean odds in each bin for odds
+probs_per_bin_odds = df_tot_votes.groupby('bin_odds').apply(lambda x: pd.Series({
+    'prob odds home': x['impl prob home'].mean(),
+    'prob outcomes home':(x['winner']==1).sum()/len(x),
+    'prob odds away': x['impl prob away'].mean(),
+    'prob outcomes away':(x['winner']==2).sum()/len(x),
+    'population': len(x)
+    }))
 
-###############
-"""
-Data Analysis
-Do Votes Shift Odds?
-"""
+# Drop missing values
+probs_per_bin_votes.dropna(inplace=True)
+probs_per_bin_odds.dropna(inplace=True)
+
+from sklearn.metrics import mean_squared_error as mse
+
+# Compare MSE
+print(mse(probs_per_bin_votes['prob votes home'], probs_per_bin_votes['prob outcomes home']))
+print(mse(probs_per_bin_odds['prob odds home'], probs_per_bin_odds['prob outcomes home']))
+
+
 
 
 
